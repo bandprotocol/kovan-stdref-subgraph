@@ -1,22 +1,25 @@
-import { NewGravatar, UpdatedGravatar } from '../generated/Gravity/Gravity'
-import { Gravatar } from '../generated/schema'
+import {BigInt} from '@graphprotocol/graph-ts'
+import {RefRate, RefSymbol} from '../generated/schema'
+import {RefDataUpdate} from '../generated/StdReferenceBasic/StdReferenceBasic'
 
-export function handleNewGravatar(event: NewGravatar): void {
-  let gravatar = new Gravatar(event.params.id.toHex())
-  gravatar.owner = event.params.owner
-  gravatar.displayName = event.params.displayName
-  gravatar.imageUrl = event.params.imageUrl
-  gravatar.save()
+function getNextId(symbol: string): BigInt {
+  let refSymbol = RefSymbol.load(symbol);
+  if (refSymbol == null) {
+    refSymbol = new RefSymbol(symbol);
+    refSymbol.count = BigInt.fromI32(0);
+  }
+  refSymbol.count = refSymbol.count + BigInt.fromI32(1);
+  refSymbol.save();
+  return refSymbol.count;
 }
 
-export function handleUpdatedGravatar(event: UpdatedGravatar): void {
-  let id = event.params.id.toHex()
-  let gravatar = Gravatar.load(id)
-  if (gravatar == null) {
-    gravatar = new Gravatar(id)
-  }
-  gravatar.owner = event.params.owner
-  gravatar.displayName = event.params.displayName
-  gravatar.imageUrl = event.params.imageUrl
-  gravatar.save()
+export function handleRefDataUpdate(event: RefDataUpdate): void {
+  let id =
+      event.params.symbol + '-' + getNextId(event.params.symbol).toString();
+  let refRate = new RefRate(id);
+  refRate.symbol = event.params.symbol;
+  refRate.rate = event.params.rate;
+  refRate.resolveTime = event.params.resolveTime;
+  refRate.requestId = event.params.requestId;
+  refRate.save()
 }

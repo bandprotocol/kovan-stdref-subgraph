@@ -1,27 +1,26 @@
 specVersion: 0.0.2
-description: Gravatar for Ethereum
+description: StdReferenceBasic for Ethereum
 repository: https://github.com/graphprotocol/example-subgraph
 schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: Gravity
-    network: mainnet
+    name: StdReferenceBasic
+    network: kovan
     source:
-      address: '0x2E645469f354BB4F5c8a05B3b30A929361cf77eC'
-      abi: Gravity
+      address: "0x65B61aa2D8bA63fC488FF07568558Ad150c3e876"
+      abi: StdReferenceBasic
+      startBlock: 20956255
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       entities:
-        - Gravatar
+        - StdReferenceBasic
       abis:
-        - name: Gravity
-          file: ./abis/Gravity.json
+        - name: StdReferenceBasic
+          file: ./abis/StdReferenceBasic.json
       eventHandlers:
-        - event: NewGravatar(uint256,address,string,string)
-          handler: handleNewGravatar
-        - event: UpdatedGravatar(uint256,address,string,string)
-          handler: handleUpdatedGravatar
+        - event: RefDataUpdate(string,uint64,uint64,uint64)
+          handler: handleRefDataUpdate
       file: ./src/mapping.ts
